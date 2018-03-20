@@ -8,6 +8,7 @@ import trainer.trainer_base as trainer_base
 import network.fc_mnist_network as fc_mnist_network
 import helper.ml_helper as ml_helper
 import helper.noisy_labels_creator as noisy_labels_creator
+import helper.math_helpers as math_helpers
 
 __author__ = 'garrett_local'
 
@@ -190,7 +191,7 @@ def cross_entropy_experiment(n, testing_index):
     return acc
 
 
-def estimate_t(n, testing_index):
+def estimate_t(n, testing_index, percentile=97):
     cross_entropy_model_path = \
         ('./model/network/experiment_mnist/'
          'estimator_n_{:.1f}_test_{:.0f}'.format(n, testing_index))
@@ -262,7 +263,13 @@ def estimate_t(n, testing_index):
 
     t_matrix_estimated = np.eye(10)
     for i in range(10):
-        x_overbar_idx = np.argmax(probabilities[:, i])
+        if percentile == 1:
+            x_overbar_idx = np.argmax(probabilities[:, i])
+        else:
+            x_overbar_idx = math_helpers.arg_percentile(
+                probabilities[:, i],
+                percentile
+            )
         for j in range(10):
             t_matrix_estimated[i, j] = probabilities[x_overbar_idx, j]
     return t_matrix_estimated
