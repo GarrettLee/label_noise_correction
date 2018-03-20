@@ -51,8 +51,7 @@ def backward_experiment(n, testing_index, t_matrix, experiment_name):
             )
 
             loss = trainer.train(
-                train_batch[0],
-                noisy_labels
+                (train_batch[0], noisy_labels)
             )
             if trainer.iter % 100 == 0:
                 print 'iter: {0}, loss: {1}'.format(trainer.iter, loss)
@@ -66,7 +65,7 @@ def backward_experiment(n, testing_index, t_matrix, experiment_name):
                                                shuffle=False)
         else:
             test_batch = mnist.test.next_batch(left, shuffle=False)
-        pred_one_hot = trainer.test(test_batch[0])
+        pred_one_hot = trainer.test((test_batch[0], ))
         pred.extend(np.argmax(pred_one_hot, axis=1))
         tested += trainer.get_batch_size()
     np.array(pred)
@@ -110,8 +109,7 @@ def forward_experiment(n, testing_index, t_matrix, experiment_name):
             )
 
             loss = trainer.train(
-                train_batch[0],
-                noisy_labels
+                (train_batch[0], noisy_labels)
             )
             if trainer.iter % 100 == 0:
                 print 'iter: {0}, loss: {1}'.format(trainer.iter, loss)
@@ -125,7 +123,7 @@ def forward_experiment(n, testing_index, t_matrix, experiment_name):
                                                shuffle=False)
         else:
             test_batch = mnist.test.next_batch(left, shuffle=False)
-        pred_one_hot = trainer.test(test_batch[0])
+        pred_one_hot = trainer.test((test_batch[0], ))
         pred.extend(np.argmax(pred_one_hot, axis=1))
         tested += trainer.get_batch_size()
     np.array(pred)
@@ -165,8 +163,7 @@ def cross_entropy_experiment(n, testing_index):
             )
 
             loss = trainer.train(
-                train_batch[0],
-                noisy_labels
+                (train_batch[0], noisy_labels)
             )
             if trainer.iter % 100 == 0:
                 print 'iter: {0}, loss: {1}'.format(trainer.iter, loss)
@@ -180,7 +177,7 @@ def cross_entropy_experiment(n, testing_index):
                                                shuffle=False)
         else:
             test_batch = mnist.test.next_batch(left, shuffle=False)
-        pred_one_hot = trainer.test(test_batch[0])
+        pred_one_hot = trainer.test((test_batch[0], ))
         pred.extend(np.argmax(pred_one_hot, axis=1))
         tested += trainer.get_batch_size()
     np.array(pred)
@@ -223,8 +220,7 @@ def estimate_t(n, testing_index, percentile=97):
             )
 
             loss = trainer.train(
-                train_batch[0],
-                noisy_labels
+                (train_batch[0], noisy_labels)
             )
             if trainer.iter % 100 == 0:
                 print 'iter: {0}, loss: {1}'.format(trainer.iter, loss)
@@ -239,7 +235,7 @@ def estimate_t(n, testing_index, percentile=97):
                                                 shuffle=False)
         else:
             test_batch = mnist.train.next_batch(left, shuffle=False)
-        pred_one_hot = trainer.test(test_batch[0])
+        pred_one_hot = trainer.test((test_batch[0], ))
         if probabilities is None:
             probabilities = pred_one_hot
         else:
@@ -254,7 +250,7 @@ def estimate_t(n, testing_index, percentile=97):
                                                      shuffle=False)
         else:
             test_batch = mnist.validation.next_batch(left, shuffle=False)
-        pred_one_hot = trainer.test(test_batch[0])
+        pred_one_hot = trainer.test((test_batch[0], ))
         if probabilities is None:
             probabilities = pred_one_hot
         else:

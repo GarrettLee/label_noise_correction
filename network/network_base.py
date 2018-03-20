@@ -1,4 +1,3 @@
-import abc
 import tensorflow as tf
 import numpy as np
 
@@ -114,51 +113,6 @@ class NetworkBase(object):
         self.variable_summaries = {}
         self.gradient_summaries = {}
         self.trainable = trainable
-
-    @abc.abstractmethod
-    def get_placeholder_x(self):
-        """
-        An abstract function must be implemented. This should return a
-        placeholder for feature feeding.
-        :return: a placeholder for feature feeding.
-        """
-        pass
-
-    @abc.abstractmethod
-    def get_placeholder_y(self):
-        """
-        An abstract function must be implemented. This should return a
-        placeholder for label feeding.
-        :return: a placeholder for label feeding.
-        """
-        pass
-
-    @abc.abstractmethod
-    def get_placeholder_keep_prob(self):
-        """
-        An abstract function must be implemented. This should return a
-        placeholder for dropout probability.
-        :return: a placeholder for dropout probability.
-        """
-        pass
-
-    @abc.abstractmethod
-    def get_tensor_prediction(self):
-        """
-        An abstract function must be implemented. This should return a
-        tensor for prediction.
-        :return: a placeholder for prediction.
-        """
-        pass
-
-    @abc.abstractmethod
-    def get_tensor_loss(self):
-        """
-        An abstract function must be implemented. This should return a
-        tensor for loss.
-        :return: a placeholder for loss.
-        """
-        pass
 
     def setup(self):
         raise NotImplementedError('Must be subclassed.')

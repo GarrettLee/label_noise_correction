@@ -1,11 +1,14 @@
+import tensorflow as tf
+
 import network.dnn_network as dnn_network
 import network.network_base as network_base
-import tensorflow as tf
+import network.loss_correction_network as loss_correction_network
 
 __author__ = 'garrett_local'
 
 
-class FcMnistNetwork(dnn_network.DNNNetwork):
+class FcMnistNetwork(dnn_network.DNNNetwork,
+                     loss_correction_network.LossCorrectionNetwork):
     """
     Network for Fully connected network on MNIST experiment in paper:
     Making Deep Neural Networks Robust to Label Noise: a Loss Correction
@@ -33,28 +36,13 @@ class FcMnistNetwork(dnn_network.DNNNetwork):
     """
     def __init__(self, loss_type='cross_entropy',
                  trainable=True, do_summarizing=False,
-                 transition_mat=None):
-        """
-        Initialize all the placeholders.
-        :param loss_type: basestring, indicating which type of loss is used,
-                    including cross_entropy, backward, backward_t, forward,
-                    forward_t.
-        :param transition_mat: Numpy mat for transition matrix which describes
-                    label noise.
-        :param trainable: if the network is trainable.
-        """
-        if loss_type != 'cross_entropy' and transition_mat is None:
-            raise ValueError('transition_mat must be set when using loss '
-                             'correction.')
-        dnn_network.DNNNetwork.__init__(self, trainable)
-
-        self.loss_type = loss_type
-        self.do_summarizing = do_summarizing
-        self.x = None
-        self.y = None
-        self.keep_prob = None
-        self.transition_mat = transition_mat
-
+                 transition_mat=None, keep_prob=0.5):
+        loss_correction_network.LossCorrectionNetwork.__init__(self,
+                                                               loss_type,
+                                                               trainable,
+                                                               do_summarizing,
+                                                               transition_mat)
+        self.keep_prob_to_feed = keep_prob
 
     @network_base.layer
     def dropout(self, inputs, name):
@@ -73,24 +61,10 @@ class FcMnistNetwork(dnn_network.DNNNetwork):
         """
         Implementation of the network architecture.
         """
+        self.build_input_placeholder()
         with tf.variable_scope('input'):
-            self.x = tf.placeholder('float', shape=[None, 784], name='x')
-            self.y = tf.placeholder('float', shape=[None, 10], name='y')
             self.keep_prob = tf.placeholder('float', shape=[], name='keep_prob')
-            if ((self.loss_type == 'backward') or
-                (self.loss_type == 'backward_t') or
-                (self.loss_type == 'forward') or
-                (self.loss_type == 'forward_t')):
-                self.transition_tensor = tf.Variable(
-                    self.transition_mat,
-                    dtype=tf.float32,
-                    trainable=False
-                )
-                self.layers['t'] = self.transition_tensor
         self.layers['keep_prob'] = self.keep_prob
-        self.layers['x'] = self.x
-        self.layers['y'] = self.y
-
 
         (self.feed(('x')).
          fc(128, name='fc1', do_summarizing=self.do_summarizing).
@@ -101,37 +75,18 @@ class FcMnistNetwork(dnn_network.DNNNetwork):
             weights_initializer=tf.random_uniform_initializer(-0.05, 0.05),
             do_summarizing=self.do_summarizing)
          )
-        with tf.name_scope('loss'):
-            if self.loss_type == 'cross_entropy':
-                loss = -tf.reduce_mean(tf.reduce_sum(self.get_output('y') *
-                                                     tf.log(self.get_output('fc3')
-                                                            + 10e-12),
-                                                     reduction_indices=[1]))
-                self.layers['loss'] = loss
-            elif self.loss_type == 'backward':
-                y_trans = tf.transpose(self.get_output('y'), perm=[1,0])
-                t_inv = tf.matrix_inverse(self.get_output('t'))
-                t_inv_trans = tf.transpose(t_inv, perm=[1,0])
-                l_orig = -tf.log(self.get_output('fc3') + 10e-12)
-                l_backward_full = tf.matmul(l_orig, t_inv_trans)
-                loss = tf.reduce_mean(
-                    tf.reduce_sum(tf.matrix_band_part(
-                        tf.matmul(l_backward_full, y_trans),
-                        0,
-                        0), reduction_indices=[1]))
-                self.layers['loss'] = loss
-            elif self.loss_type == 'forward':
-                corrected_pred = tf.matmul(self.get_output('fc3'),
-                                           self.get_output('t'))
-                loss = -tf.reduce_mean(tf.reduce_sum(self.get_output('y') *
-                                                     tf.log(corrected_pred
-                                                            + 10e-12),
-                                                     reduction_indices=[1]))
-                self.layers['corrected_pred'] = corrected_pred
-                self.layers['loss'] = loss
-            else:
-                raise RuntimeError('Incorrect loss function.')
-        self.add_summary(loss, name='loss')
+        self.build_loss()
+
+    def generate_feed_dict_for_training(self, fed_data):
+        x = fed_data[0]
+        y = fed_data[1]
+        return {self.get_placeholder_x(): x, self.get_placeholder_y(): y,
+                self.get_placeholder_keep_prob(): self.keep_prob_to_feed}
+
+    def generate_feed_dict_for_testing(self, fed_data):
+        x = fed_data[0]
+        return {self.get_placeholder_x(): x,
+                self.get_placeholder_keep_prob(): 1.0}
 
     def get_placeholder_x(self):
         """

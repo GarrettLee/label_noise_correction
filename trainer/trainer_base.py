@@ -19,9 +19,6 @@ class TrainerBase(object):
             cfg['optimization']['delta'] = '10e-6'
             cfg['optimization']['epoch'] = '40'
 
-            cfg['dropout'] = {}
-            cfg['dropout']['probability'] = '0.5'
-
             cfg['batch_size'] = {}
             cfg['batch_size']['batch_size'] = '128'
 
@@ -87,34 +84,26 @@ class TrainerBase(object):
             )
         self.session.run(init)
 
-    def train(self, x, y):
+    def train(self, fed_data):
         if self.do_summarizing:
             _, summary_result, loss = self.session.run(
                 [self.train_op, self.summaries, self.network.get_tensor_loss()],
-                feed_dict={self.network.get_placeholder_x(): x,
-                           self.network.get_placeholder_y(): y,
-                           self.network.get_placeholder_keep_prob():
-                               float(self.cfg['dropout']['probability'])}
+                feed_dict=self.network.generate_feed_dict_for_training(fed_data)
             )
             self.summary_writer.add_summary(summary_result, self._iter)
             self.summary_writer.flush()
         else:
             _, loss = self.session.run(
                 [self.train_op, self.network.get_tensor_loss()],
-                feed_dict={self.network.get_placeholder_x(): x,
-                           self.network.get_placeholder_y(): y,
-                           self.network.get_placeholder_keep_prob():
-                                float(self.cfg['dropout']['probability'])}
+                feed_dict=self.network.generate_feed_dict_for_training(fed_data)
             )
         self._iter += 1
         return loss
 
-    def test(self, x):
+    def test(self, fed_data):
         return self.session.run(
             self.network.get_tensor_prediction(),
-            feed_dict={self.network.get_placeholder_x(): x,
-                       self.network.get_placeholder_keep_prob():
-                           float(1.0)}
+            feed_dict=self.network.generate_feed_dict_for_testing(fed_data)
         )
 
     def get_max_epoch(self):
