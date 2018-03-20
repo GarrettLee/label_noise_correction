@@ -7,7 +7,7 @@ __author__ = 'garrett_local'
 class DNNNetwork(network_base.NetworkBase):
     """Implementing common network layers."""
 
-    def __init__(self, inputs, trainable=True):
+    def __init__(self, trainable=True):
         network_base.NetworkBase.__init__(self, trainable)
 
     @network_base.layer
