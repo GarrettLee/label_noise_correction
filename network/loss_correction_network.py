@@ -49,25 +49,6 @@ class LossCorrectionNetwork(network_base.NetworkBase):
         """
         pass
 
-    @abc.abstractmethod
-    def get_tensor_prediction(self):
-        """
-        An abstract function must be implemented. This should return a
-        tensor for prediction. Prediction should strictly be of shape
-        [batch_size, classes_number].
-        :return: a placeholder for prediction.
-        """
-        pass
-
-    @abc.abstractmethod
-    def get_tensor_loss(self):
-        """
-        An abstract function must be implemented. This should return a
-        tensor for loss.
-        :return: a placeholder for loss.
-        """
-        pass
-
     def build_input_placeholder(self):
         with tf.variable_scope('input'):
             self.x = tf.placeholder('float', shape=[None, 784], name='x')

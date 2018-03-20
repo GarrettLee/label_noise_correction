@@ -1,3 +1,4 @@
+import abc
 import tensorflow as tf
 import numpy as np
 
@@ -280,3 +281,22 @@ class NetworkBase(object):
         else:
             with tf.variable_scope(scope) as scope:
                 return scope.trainable_variables()
+
+    @abc.abstractmethod
+    def get_tensor_prediction(self):
+        """
+        An abstract function must be implemented. This should return a
+        tensor for prediction. Prediction should strictly be of shape
+        [batch_size, classes_number].
+        :return: a placeholder for prediction.
+        """
+        pass
+
+    @abc.abstractmethod
+    def get_tensor_loss(self):
+        """
+        An abstract function must be implemented. This should return a
+        tensor for loss.
+        :return: a placeholder for loss.
+        """
+        pass
