@@ -290,7 +290,6 @@ class NetworkBase(object):
         [batch_size, classes_number].
         :return: a placeholder for prediction.
         """
-        pass
 
     @abc.abstractmethod
     def get_tensor_loss(self):
@@ -299,4 +298,12 @@ class NetworkBase(object):
         tensor for loss.
         :return: a placeholder for loss.
         """
-        pass
+
+    @abc.abstractmethod
+    def generate_feed_dict_for_training(self, fed_data):
+        """
+        An abstract function must be implemented. This should return a feed dict
+        for training.
+        :param fed_data: fed data.
+        :return: a feed dict.
+        """

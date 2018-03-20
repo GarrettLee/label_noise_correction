@@ -37,7 +37,6 @@ class LossCorrectionNetwork(network_base.NetworkBase):
         placeholder for feature feeding.
         :return: a placeholder for feature feeding.
         """
-        pass
 
     @abc.abstractmethod
     def get_placeholder_y(self):
@@ -47,7 +46,6 @@ class LossCorrectionNetwork(network_base.NetworkBase):
         [batch_size, classes_number].
         :return: a placeholder for label feeding.
         """
-        pass
 
     def build_input_placeholder(self):
         with tf.variable_scope('input'):
