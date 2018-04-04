@@ -72,7 +72,7 @@ class LossCorrectionNetwork(network_base.NetworkBase):
         with tf.name_scope('loss'):
             if self.loss_type == 'cross_entropy':
                 loss = -tf.reduce_mean(tf.reduce_sum(
-                    self.get_placeholder_y * tf.log(self.get_tensor_prediction()
+                    self.get_placeholder_y() * tf.log(self.get_tensor_prediction()
                                                   + 10e-12),
                     reduction_indices=[1]
                 ))
@@ -92,7 +92,7 @@ class LossCorrectionNetwork(network_base.NetworkBase):
             elif self.loss_type == 'forward':
                 corrected_pred = tf.matmul(self.get_tensor_prediction(),
                                            self.get_output('t'))
-                loss = -tf.reduce_mean(tf.reduce_sum(self.get_placeholder_y *
+                loss = -tf.reduce_mean(tf.reduce_sum(self.get_placeholder_y() *
                                                      tf.log(corrected_pred
                                                             + 10e-12),
                                                      reduction_indices=[1]))
