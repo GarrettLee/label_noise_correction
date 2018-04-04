@@ -1,3 +1,4 @@
+mkdir result
 python ./experiment_mnist.py backward_t > ./result/experiment_mnist_backward_t.txt &
 python ./experiment_mnist.py forward_t > ./result/experiment_mnist_forward_t.txt &
 python ./experiment_mnist.py backward > ./result/experiment_mnist_backward.txt &
