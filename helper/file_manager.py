@@ -10,6 +10,8 @@ def last_modified(path_to_match):
     :return: the last modified file among those matching with a given wildcards.
     """
     matched = glob.glob(path_to_match)
+    if len(matched) == 0:
+        return None
     matched.sort(key=lambda f: os.stat(f).st_mtime)
     newest = matched[-1]
     return newest

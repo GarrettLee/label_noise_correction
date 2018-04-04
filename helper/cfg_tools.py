@@ -39,6 +39,9 @@ def read_cfg_file(path):
     conf.read(path)
     sections = conf.sections()
     cfg = {}
+    if len(sections) == 0:
+        raise AssertionError('sections is empty. File {} may not exist or may '
+                             'be empty'.format(path))
     for section in sections:
         options = conf.options(section)
         cfg_section = {}

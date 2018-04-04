@@ -12,6 +12,8 @@ import helper.math_helpers as math_helpers
 
 __author__ = 'garrett_local'
 
+cfg_path = './cfg/experiments/mnist/mnist'
+
 
 def backward_experiment(n, testing_index, t_matrix, experiment_name):
 
@@ -28,6 +30,7 @@ def backward_experiment(n, testing_index, t_matrix, experiment_name):
 
     mnist = tf.contrib.learn.datasets.load_dataset("mnist")
     trainer = trainer_base.TrainerBase(
+        cfg_path=cfg_path,
         do_summarizing=True,
         summary_path=summary_path
     )
@@ -86,6 +89,7 @@ def forward_experiment(n, testing_index, t_matrix, experiment_name):
 
     mnist = tf.contrib.learn.datasets.load_dataset("mnist")
     trainer = trainer_base.TrainerBase(
+        cfg_path=cfg_path,
         do_summarizing=True,
         summary_path=summary_path
     )
@@ -144,6 +148,7 @@ def cross_entropy_experiment(n, testing_index):
 
     mnist = tf.contrib.learn.datasets.load_dataset("mnist")
     trainer = trainer_base.TrainerBase(
+        cfg_path=cfg_path,
         do_summarizing=True,
         summary_path=summary_path
     )
@@ -198,6 +203,7 @@ def estimate_t(n, testing_index, percentile=97):
 
     mnist = tf.contrib.learn.datasets.load_dataset("mnist")
     trainer = trainer_base.TrainerBase(
+        cfg_path=cfg_path,
         do_summarizing=True,
         summary_path=summary_path
     )
@@ -206,8 +212,8 @@ def estimate_t(n, testing_index, percentile=97):
         loss_type='cross_entropy',
     ))
     if trainer.load_model(
-            cross_entropy_model_path,
-            iter=17618
+        cross_entropy_model_path,
+        iter=17618
     ) is None:
         while mnist.train.epochs_completed <= trainer.get_max_epoch():
             train_batch = mnist.train.next_batch(

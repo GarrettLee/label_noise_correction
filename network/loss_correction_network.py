@@ -47,34 +47,38 @@ class LossCorrectionNetwork(network_base.NetworkBase):
         :return: a placeholder for label feeding.
         """
 
-    def build_input_placeholder(self):
+    def build_loss(self):
+        """
+        Build loss. Loss correction will be performed here, if self.loss_type
+        is set appropriately.
+        :return: None.
+        """
+        assert hasattr(self, 'transition_mat'), ('transition_mat not exist,'
+                                                 'maybe because that '
+                                                 'LossCorrectionNetwork.__init__()'
+                                                 'is not called by its subclass.')
         with tf.variable_scope('input'):
-            self.x = tf.placeholder('float', shape=[None, 784], name='x')
-            self.y = tf.placeholder('float', shape=[None, 10], name='y')
             if ((self.loss_type == 'backward') or
-                (self.loss_type == 'backward_t') or
-                (self.loss_type == 'forward') or
-                (self.loss_type == 'forward_t')):
+                    (self.loss_type == 'backward_t') or
+                    (self.loss_type == 'forward') or
+                    (self.loss_type == 'forward_t')):
                 self.transition_tensor = tf.Variable(
                     self.transition_mat,
                     dtype=tf.float32,
                     trainable=False
                 )
                 self.layers['t'] = self.transition_tensor
-        self.layers['x'] = self.x
-        self.layers['y'] = self.y
 
-    def build_loss(self):
         with tf.name_scope('loss'):
             if self.loss_type == 'cross_entropy':
                 loss = -tf.reduce_mean(tf.reduce_sum(
-                    self.get_output('y') * tf.log(self.get_tensor_prediction()
+                    self.get_placeholder_y * tf.log(self.get_tensor_prediction()
                                                   + 10e-12),
                     reduction_indices=[1]
                 ))
                 self.layers['loss'] = loss
             elif self.loss_type == 'backward':
-                y_trans = tf.transpose(self.get_output('y'), perm=[1,0])
+                y_trans = tf.transpose(self.get_placeholder_y(), perm=[1,0])
                 t_inv = tf.matrix_inverse(self.get_output('t'))
                 t_inv_trans = tf.transpose(t_inv, perm=[1,0])
                 l_orig = -tf.log(self.get_tensor_prediction() + 10e-12)
@@ -88,7 +92,7 @@ class LossCorrectionNetwork(network_base.NetworkBase):
             elif self.loss_type == 'forward':
                 corrected_pred = tf.matmul(self.get_tensor_prediction(),
                                            self.get_output('t'))
-                loss = -tf.reduce_mean(tf.reduce_sum(self.get_output('y') *
+                loss = -tf.reduce_mean(tf.reduce_sum(self.get_placeholder_y *
                                                      tf.log(corrected_pred
                                                             + 10e-12),
                                                      reduction_indices=[1]))

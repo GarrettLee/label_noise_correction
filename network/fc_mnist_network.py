@@ -77,6 +77,13 @@ class FcMnistNetwork(dnn_network.DNNNetwork,
          )
         self.build_loss()
 
+    def build_input_placeholder(self):
+        with tf.variable_scope('input'):
+            self.x = tf.placeholder('float', shape=[None, 784], name='x')
+            self.y = tf.placeholder('float', shape=[None, 10], name='y')
+        self.layers['x'] = self.x
+        self.layers['y'] = self.y
+
     def generate_feed_dict_for_training(self, fed_data):
         x = fed_data[0]
         y = fed_data[1]

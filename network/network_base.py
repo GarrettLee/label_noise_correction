@@ -307,3 +307,13 @@ class NetworkBase(object):
         :param fed_data: fed data.
         :return: a feed dict.
         """
+
+    @abc.abstractmethod
+    def generate_feed_dict_for_testing(self, fed_data):
+        """
+        An abstract function must be implemented. This should return a feed dict
+        for testing.
+        :param fed_data: fed data.
+        :return: a feed dict.
+        """
+
