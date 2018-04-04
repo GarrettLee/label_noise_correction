@@ -15,6 +15,10 @@ __author__ = 'garrett_local'
 cfg_path = './cfg/experiments/mnist/mnist'
 
 
+import os
+os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
+os.environ["CUDA_VISIBLE_DEVICES"] = "2"
+
 def backward_experiment(n, testing_index, t_matrix, experiment_name):
 
     # Singular transition matrix.
@@ -31,11 +35,11 @@ def backward_experiment(n, testing_index, t_matrix, experiment_name):
     mnist = tf.contrib.learn.datasets.load_dataset("mnist")
     trainer = trainer_base.TrainerBase(
         cfg_path=cfg_path,
-        do_summarizing=True,
+        do_summarizing=False,
         summary_path=summary_path
     )
     trainer.setup_network(fc_mnist_network.FcMnistNetwork(
-        do_summarizing=True,
+        do_summarizing=False,
         loss_type='backward',
         transition_mat=t_matrix
     ))
@@ -90,11 +94,11 @@ def forward_experiment(n, testing_index, t_matrix, experiment_name):
     mnist = tf.contrib.learn.datasets.load_dataset("mnist")
     trainer = trainer_base.TrainerBase(
         cfg_path=cfg_path,
-        do_summarizing=True,
+        do_summarizing=False,
         summary_path=summary_path
     )
     trainer.setup_network(fc_mnist_network.FcMnistNetwork(
-        do_summarizing=True,
+        do_summarizing=False,
         loss_type='forward',
         transition_mat=t_matrix
     ))
@@ -149,10 +153,10 @@ def cross_entropy_experiment(n, testing_index):
     mnist = tf.contrib.learn.datasets.load_dataset("mnist")
     trainer = trainer_base.TrainerBase(
         cfg_path=cfg_path,
-        do_summarizing=True,
+        do_summarizing=False,
         summary_path=summary_path
     )
-    trainer.setup_network(fc_mnist_network.FcMnistNetwork(do_summarizing=True))
+    trainer.setup_network(fc_mnist_network.FcMnistNetwork(do_summarizing=False))
     if trainer.load_model(
             cross_entropy_model_path,
             iter=17618
@@ -204,11 +208,11 @@ def estimate_t(n, testing_index, percentile=97):
     mnist = tf.contrib.learn.datasets.load_dataset("mnist")
     trainer = trainer_base.TrainerBase(
         cfg_path=cfg_path,
-        do_summarizing=True,
+        do_summarizing=False,
         summary_path=summary_path
     )
     trainer.setup_network(fc_mnist_network.FcMnistNetwork(
-        do_summarizing=True,
+        do_summarizing=False,
         loss_type='cross_entropy',
     ))
     if trainer.load_model(
