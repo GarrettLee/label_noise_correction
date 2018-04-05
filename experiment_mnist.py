@@ -374,6 +374,9 @@ def mnist_experiment_forward_t():
     # plt.show(1)
 
 if __name__ == '__main__':
+    result_path = './result/mnist/'
+    if not os.path.exists(result_path):
+        os.mkdir(result_path)
     if len(sys.argv) == 1:
         mnist_experiment_backward_t()
         mnist_experiment_forward_t()
