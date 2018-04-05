@@ -1,4 +1,5 @@
 #!/usr/bin/python2
+import os
 import sys
 import tensorflow as tf
 import numpy as np
@@ -14,10 +15,6 @@ __author__ = 'garrett_local'
 
 cfg_path = './cfg/experiments/mnist/mnist'
 
-
-import os
-os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
-os.environ["CUDA_VISIBLE_DEVICES"] = "2"
 
 def backward_experiment(n, testing_index, t_matrix, experiment_name):
 
