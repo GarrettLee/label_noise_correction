@@ -1,0 +1,9 @@
+[batch_size]
+batch_size = 128
+
+[optimization]
+algorithm = AdaGrad
+delta = 10e-6
+epoch = 40
+learning_rate = 0.01
+
