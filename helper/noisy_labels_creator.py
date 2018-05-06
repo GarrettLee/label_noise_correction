@@ -23,15 +23,12 @@ def create_mnist_transition_matrix(n, with_eye=False):
 def create_mnist_noisy_labels_with_t(t_matrix, one_hot_label):
 
     # sampling
-    samples_num = one_hot_label.shape[0]
-    sample = (np.random.uniform(size=(
-        samples_num,
-        t_matrix.shape[0],
-        t_matrix.shape[1]
-    )) <= t_matrix)
-    for idx, label in enumerate(one_hot_label):
-        one_hot_label[idx] = np.matmul(one_hot_label[idx:idx+1], sample[idx])
-    return one_hot_label
+    pdf = np.matmul(one_hot_label, t_matrix)
+    cdf = np.matmul(pdf, np.tri(pdf.shape[1]).transpose())
+    sample = np.random.uniform(size=one_hot_label.shape[0])
+    t = np.eye(pdf.shape[1]) - np.eye(pdf.shape[1], k=1)
+    ret = np.matmul((cdf - sample.reshape([-1, 1])) > 0, t)
+    return ret
 
 
 def create_mnist_noisy_labels(n, one_hot_label, with_eye=False):
