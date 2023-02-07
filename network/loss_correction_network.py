@@ -57,7 +57,7 @@ class LossCorrectionNetwork(network_base.NetworkBase):
                                                  'maybe because that '
                                                  'LossCorrectionNetwork.__init__()'
                                                  'is not called by its subclass.')
-        with tf.variable_scope('input'):
+        with tf.compat.v1.variable_scope('input'):
             if ((self.loss_type == 'backward') or
                     (self.loss_type == 'backward_t') or
                     (self.loss_type == 'forward') or
@@ -71,31 +71,37 @@ class LossCorrectionNetwork(network_base.NetworkBase):
 
         with tf.name_scope('loss'):
             if self.loss_type == 'cross_entropy':
-                loss = -tf.reduce_mean(tf.reduce_sum(
-                    self.get_placeholder_y() * tf.log(self.get_tensor_prediction()
-                                                  + 10e-12),
-                    reduction_indices=[1]
-                ))
+                loss = -tf.reduce_mean(
+                    tf.math.reduce_sum(
+                        self.get_placeholder_y() * tf.math.log(self.get_tensor_prediction()+ 10e-12),
+                        axis=1
+                    )
+                )
                 self.layers['loss'] = loss
             elif self.loss_type == 'backward':
                 y_trans = tf.transpose(self.get_placeholder_y(), perm=[1,0])
                 t_inv = tf.matrix_inverse(self.get_output('t'))
                 t_inv_trans = tf.transpose(t_inv, perm=[1,0])
-                l_orig = -tf.log(self.get_tensor_prediction() + 10e-12)
+                l_orig = -tf.math.log(self.get_tensor_prediction() + 10e-12)
                 l_backward_full = tf.matmul(l_orig, t_inv_trans)
                 loss = tf.reduce_mean(
-                    tf.reduce_sum(tf.matrix_band_part(
-                        tf.matmul(l_backward_full, y_trans),
-                        0,
-                        0), reduction_indices=[1]))
+                    tf.math.reduce_sum(
+                        tf.matrix_band_part(
+                            tf.matmul(l_backward_full, y_trans),
+                            0,
+                            0
+                        ),
+                        axis=1
+                    )
+                )
                 self.layers['loss'] = loss
             elif self.loss_type == 'forward':
                 corrected_pred = tf.matmul(self.get_tensor_prediction(),
                                            self.get_output('t'))
-                loss = -tf.reduce_mean(tf.reduce_sum(self.get_placeholder_y() *
-                                                     tf.log(corrected_pred
+                loss = -tf.reduce_mean(tf.math.reduce_sum(self.get_placeholder_y() *
+                                                     tf.math.log(corrected_pred
                                                             + 10e-12),
-                                                     reduction_indices=[1]))
+                                                     axis=1))
                 self.layers['corrected_pred'] = corrected_pred
                 self.layers['loss'] = loss
             else:

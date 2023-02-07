@@ -29,7 +29,7 @@ def backward_experiment(n, testing_index, t_matrix, experiment_name):
         ('./summaries/network/experiment_mnist/'
          '{}_{:.1f}_test_{:.0f}'.format(experiment_name, n, testing_index))
 
-    mnist = tf.contrib.learn.datasets.load_dataset("mnist")
+    mnist = tf.keras.datasets.mnist
     trainer = trainer_base.TrainerBase(
         cfg_path=cfg_path,
         do_summarizing=False,
@@ -58,7 +58,7 @@ def backward_experiment(n, testing_index, t_matrix, experiment_name):
                 (train_batch[0], noisy_labels)
             )
             if trainer.iter % 100 == 0:
-                print 'iter: {0}, loss: {1}'.format(trainer.iter, loss)
+                print('iter: {0}, loss: {1}'.format(trainer.iter, loss))
 
     tested = 0
     pred = []
@@ -75,7 +75,7 @@ def backward_experiment(n, testing_index, t_matrix, experiment_name):
     np.array(pred)
     acc = (np.sum(np.array(pred) == mnist.test.labels) /
            float(mnist.test.num_examples))
-    print 'Accuracy: {0}'.format(acc)
+    print('Accuracy: {0}'.format(acc))
     trainer.save_model(cross_entropy_model_path)
     return acc
 
@@ -88,7 +88,7 @@ def forward_experiment(n, testing_index, t_matrix, experiment_name):
         ('./summaries/network/experiment_mnist/'
          '{}_{:.1f}_test_{:.0f}'.format(experiment_name, n, testing_index))
 
-    mnist = tf.contrib.learn.datasets.load_dataset("mnist")
+    mnist = tf.keras.datasets.mnist
     trainer = trainer_base.TrainerBase(
         cfg_path=cfg_path,
         do_summarizing=False,
@@ -117,7 +117,7 @@ def forward_experiment(n, testing_index, t_matrix, experiment_name):
                 (train_batch[0], noisy_labels)
             )
             if trainer.iter % 100 == 0:
-                print 'iter: {0}, loss: {1}'.format(trainer.iter, loss)
+                print('iter: {0}, loss: {1}'.format(trainer.iter, loss))
 
     tested = 0
     pred = []
@@ -134,7 +134,7 @@ def forward_experiment(n, testing_index, t_matrix, experiment_name):
     np.array(pred)
     acc = (np.sum(np.array(pred) == mnist.test.labels) /
            float(mnist.test.num_examples))
-    print 'Accuracy: {0}'.format(acc)
+    print('Accuracy: {0}'.format(acc))
     trainer.save_model(cross_entropy_model_path)
     return acc
 
@@ -147,7 +147,7 @@ def cross_entropy_experiment(n, testing_index):
         ('./summaries/network/experiment_mnist/'
          'cross_entropy_{:.1f}_test_{:.0f}'.format(n, testing_index))
 
-    mnist = tf.contrib.learn.datasets.load_dataset("mnist")
+    mnist = tf.keras.datasets.mnist
     trainer = trainer_base.TrainerBase(
         cfg_path=cfg_path,
         do_summarizing=False,
@@ -172,7 +172,7 @@ def cross_entropy_experiment(n, testing_index):
                 (train_batch[0], noisy_labels)
             )
             if trainer.iter % 100 == 0:
-                print 'iter: {0}, loss: {1}'.format(trainer.iter, loss)
+                print('iter: {0}, loss: {1}'.format(trainer.iter, loss))
 
     tested = 0
     pred = []
@@ -189,7 +189,7 @@ def cross_entropy_experiment(n, testing_index):
     np.array(pred)
     acc = (np.sum(np.array(pred) == mnist.test.labels) /
            float(mnist.test.num_examples))
-    print 'Accuracy: {0}'.format(acc)
+    print('Accuracy: {0}'.format(acc))
     trainer.save_model(cross_entropy_model_path)
     return acc
 
@@ -202,7 +202,8 @@ def estimate_t(n, testing_index, percentile=97):
         ('./summaries/network/experiment_mnist/'
          'estimator_{:.1f}_test_{:.0f}'.format(n, testing_index))
 
-    mnist = tf.contrib.learn.datasets.load_dataset("mnist")
+    #mnist = tf.keras.datasets.mnist.load_data()
+    (x_train, y_train), (x_test, y_test) = tf.keras.datasets.mnist.load_data()
     trainer = trainer_base.TrainerBase(
         cfg_path=cfg_path,
         do_summarizing=False,
@@ -230,7 +231,7 @@ def estimate_t(n, testing_index, percentile=97):
                 (train_batch[0], noisy_labels)
             )
             if trainer.iter % 100 == 0:
-                print 'iter: {0}, loss: {1}'.format(trainer.iter, loss)
+                print('iter: {0}, loss: {1}'.format(trainer.iter, loss))
     trainer.save_model(cross_entropy_model_path)
     probabilities = None
 
@@ -291,7 +292,7 @@ def mnist_experiment_backward():
             ))
         exp_data.append(exp_data_n)
     result = np.mean(exp_data, axis=1)
-    print result
+    print(result)
     plt.plot(result)
     np.save('./result/mnist/backward.npy', result)
     #$ plt.show(1)
@@ -310,7 +311,7 @@ def mnist_experiment_forward():
             ))
         exp_data.append(exp_data_n)
     result = np.mean(exp_data, axis=1)
-    print result
+    print(result)
     plt.plot(result)
     np.save('./result/mnist/forward.npy', result)
     # plt.show(1)
@@ -324,7 +325,7 @@ def mnist_experiment_cross_entropy():
             exp_data_n.append(cross_entropy_experiment(n, testing_index))
         exp_data.append(exp_data_n)
     result = np.mean(exp_data, axis=1)
-    print result
+    print(result)
     plt.plot(result)
     np.save('./result/mnist/cross_entropy.npy', result)
     # plt.show(1)
@@ -344,7 +345,7 @@ def mnist_experiment_backward_t():
             ))
         exp_data.append(exp_data_n)
     result = np.mean(exp_data, axis=1)
-    print result
+    print(result)
     plt.plot(result)
     np.save('./result/mnist/backward_t.npy', result)
 
@@ -365,7 +366,7 @@ def mnist_experiment_forward_t():
             ))
         exp_data.append(exp_data_n)
     result = np.mean(exp_data, axis=1)
-    print result
+    print(result)
     plt.plot(result)
     np.save('./result/mnist/forward_t.npy', result)
     # plt.show(1)
@@ -373,7 +374,7 @@ def mnist_experiment_forward_t():
 if __name__ == '__main__':
     result_path = './result/mnist/'
     if not os.path.exists(result_path):
-        os.mkdir(result_path)
+        os.makedirs(result_path)
     if len(sys.argv) == 1:
         mnist_experiment_backward_t()
         mnist_experiment_forward_t()
