@@ -14,3 +14,4 @@ Implementation of paper: Making Deep Neural Network Robust to Label Noise: a Los
 ## Result
 This is the result of *Fully connected network on MNIST*. Notice that when N=0.5, the parametric matrix T is singular.
 ![results.png](https://raw.githubusercontent.com/GarrettLee/label_noise_correction/master/results.png)
+`

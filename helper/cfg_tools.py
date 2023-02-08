@@ -1,5 +1,5 @@
 import os
-import ConfigParser
+import configparser
 
 __author__ = 'garrett_local'
 
@@ -12,7 +12,7 @@ def write_cfg_file(path, cfg):
                 dict contained is content of a section. They contain a few
                 items, whose value should be basestring.
     """
-    conf = ConfigParser.ConfigParser()
+    conf = configparser.ConfigParser()
     cfg_file = open(path, 'w')
     sections = cfg.keys()
     sections = sorted(sections)
@@ -35,7 +35,7 @@ def read_cfg_file(path):
                 contained is content of a section. They contain a few items,
                 whose value will be basestring.
     """
-    conf = ConfigParser.ConfigParser()
+    conf = configparser.ConfigParser()
     conf.read(path)
     sections = conf.sections()
     cfg = {}

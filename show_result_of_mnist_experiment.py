@@ -27,8 +27,8 @@ if __name__ == '__main__':
         x_backward_t, y_backward_t = \
             parse_result(np.load('./result/mnist/backward_t.npy'))
     except IOError, e:
-        print e.message
-        print ('No experiment result found, first run bash script '
+        print(e.message)
+        print('No experiment result found, first run bash script '
               'run_experiment_mnist.')
 
     handler_cross_entropy, = plt.plot(x_cross_entropy, y_cross_entropy, 'yx-')

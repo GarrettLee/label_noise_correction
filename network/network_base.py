@@ -45,7 +45,7 @@ def layer(op):
         else:
             layer_input = list(self.inputs)
 
-        if kwargs.has_key('do_summarizing'):
+        if 'do_summarizing' in kwargs:
             do_summarizing = kwargs.pop('do_summarizing')
         else:
             do_summarizing = False
@@ -152,9 +152,9 @@ class NetworkBase(object):
         for layer in to_append:
             try:
                 self.inputs.append(self.layers[layer])
-                print layer
+                print(layer)
             except KeyError:
-                print self.layers.keys()
+                print(self.layers.keys())
                 raise KeyError('Unknown layer name fed: {0}'.format(layer))
         return self
 
@@ -167,7 +167,7 @@ class NetworkBase(object):
         try:
             layer = self.layers[layer]
         except KeyError:
-            print self.layers.keys()
+            print(self.layers.keys())
             raise KeyError('Unknown layer name to be fetched: {0}'.format(layer))
         return layer
 
@@ -200,13 +200,13 @@ class NetworkBase(object):
                     second Tensor is its corresponding trainable variable.
         """
         if tvars is None:
-            tvars = tf.trainable_variables()
+            tvars = tf.compat.v1.trainable_variables()
         grads = tf.gradients(y, tvars)
         if do_summarizing:
             for idx in range(len(tvars)):
                 name = '{0}_{1}'.format(y.name, tvars[idx].name)
                 # Prevent from duplicating.
-                if not self.gradient_summaries.has_key(name):
+                if name not in self.gradient_summaries:
                     self.gradient_summaries[name] = \
                         tf.summary.histogram('grad/{0}'.format(name),
                                              grads[idx])
@@ -217,7 +217,7 @@ class NetworkBase(object):
         Merge all summaries and return.
         :return:
         """
-        return tf.summary.merge_all()
+        return tf.compat.v1.summary.merge_all()
 
     def save_network_to_npy(self, data_path, session):
         """
@@ -256,15 +256,15 @@ class NetworkBase(object):
         """
         data_dicts = np.load(data_path)
         for data_dict in data_dicts:
-            with tf.variable_scope(data_dict['scope'], reuse=True):
+            with tf.compat.v1.variable_scope(data_dict['scope'], reuse=True):
                 try:
-                    var = tf.get_variable(data_dict['name'])
+                    var = tf.compat.v1.get_variable(data_dict['name'])
                     session.run(var.assign(data_dict['value']))
-                    print 'assign pretrain model to {0}/{1}'.\
-                        format(data_dict['scope'], data_dict['name'])
+                    print('assign pretrain model to {0}/{1}'.\
+                        format(data_dict['scope'], data_dict['name']))
                 except ValueError:
-                    print 'ignore {0}/{1}'.format(data_dict['scope'],
-                                                  data_dict['name'])
+                    print('ignore {0}/{1}'.format(data_dict['scope'],
+                                                  data_dict['name']))
                     if not ignore_missing:
                         raise
 
@@ -277,9 +277,9 @@ class NetworkBase(object):
                     of dict. each dict corresponds to a trainable variable.
         """
         if scope is None:
-            return tf.trainable_variables() # return all variables.
+            return tf.compat.v1.trainable_variables() # return all variables.
         else:
-            with tf.variable_scope(scope) as scope:
+            with tf.compat.v1.variable_scope(scope) as scope:
                 return scope.trainable_variables()
 
     @abc.abstractmethod

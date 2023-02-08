@@ -62,8 +62,8 @@ class FcMnistNetwork(dnn_network.DNNNetwork,
         Implementation of the network architecture.
         """
         self.build_input_placeholder()
-        with tf.variable_scope('input'):
-            self.keep_prob = tf.placeholder('float', shape=[], name='keep_prob')
+        with tf.compat.v1.variable_scope('input'):
+            self.keep_prob = tf.compat.v1.placeholder('float', shape=[], name='keep_prob')
         self.layers['keep_prob'] = self.keep_prob
 
         (self.feed(('x')).
@@ -78,9 +78,9 @@ class FcMnistNetwork(dnn_network.DNNNetwork,
         self.build_loss()
 
     def build_input_placeholder(self):
-        with tf.variable_scope('input'):
-            self.x = tf.placeholder('float', shape=[None, 784], name='x')
-            self.y = tf.placeholder('float', shape=[None, 10], name='y')
+        with tf.compat.v1.variable_scope('input'):
+            self.x = tf.compat.v1.placeholder('float', shape=[None, 784], name='x')
+            self.y = tf.compat.v1.placeholder('float', shape=[None, 10], name='y')
         self.layers['x'] = self.x
         self.layers['y'] = self.y
 

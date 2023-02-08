@@ -63,7 +63,7 @@ class TrainerBase(object):
     def get_train_op(self):
         assert self._network is not None, 'Network not defined.'
         if self._cfg['optimization']['algorithm'] == 'AdaGrad':
-            optimizer = tf.train.AdagradOptimizer(
+            optimizer = tf.optimizers.Adagrad(
                 float(self._cfg['optimization']['learning_rate']),
                 initial_accumulator_value=float(self._cfg['optimization']['delta']))
         return optimizer.apply_gradients(
@@ -80,12 +80,12 @@ class TrainerBase(object):
             network.setup()
             self._train_op = self.get_train_op()
             self._summaries = network.get_summaries()
-            init = tf.global_variables_initializer()
-        config = tf.ConfigProto()
+            init = tf.compat.v1.global_variables_initializer()
+        config = tf.compat.v1.ConfigProto()
         config.gpu_options.allow_growth = True
-        self._session = tf.Session(graph=graph, config=config)
+        self._session = tf.compat.v1.Session(graph=graph, config=config)
         if self._do_summarizing:
-            self._summary_writer = tf.summary.FileWriter(
+            self._summary_writer = tf.compat.v1.summary.FileWriter(
                 self._summary_path,
                 self._session.graph
             )
@@ -177,7 +177,7 @@ class TrainerBase(object):
         file_manager.create_if_not_exist(path)
         if save_type == 'tensorflow_save':
             with self._session.graph.as_default():
-                saver = tf.train.Saver()
+                saver = tf.compat.v1.train.Saver()
                 saver.save(
                     self._session,
                     os.path.join(path, 'model.ckpt'),
@@ -214,7 +214,7 @@ class TrainerBase(object):
                     os.path.basename(last_modified_model_name)
                 )[0]
                 with self._session.graph.as_default():
-                    saver = tf.train.Saver()
+                    saver = tf.compat.v1.train.Saver()
                     try:
                         saver.restore(
                             self._session,
@@ -245,7 +245,7 @@ class TrainerBase(object):
         else:
             if load_type == 'tensorflow_save':
                 with self._session.graph.as_default():
-                    saver = tf.train.Saver()
+                    saver = tf.compat.v1.train.Saver()
                     try:
                         saver.restore(
                             self._session,
@@ -255,7 +255,7 @@ class TrainerBase(object):
                             )
                         )
                     except (tf.errors.NotFoundError,
-                            tf.errors.InvalidArgumentError):  # File doesn't exist.
+                            tf.errors.InvalidArgumentError, ValueError):  # File doesn't exist.
                         return None
             elif load_type == 'npy_save':
                 try:

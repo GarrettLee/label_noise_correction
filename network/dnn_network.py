@@ -31,20 +31,20 @@ class DNNNetwork(network_base.NetworkBase):
             'Shape of fc input must be [BATCH_SIZE, CHANNEL_IN].'
         if weights_initializer is None:
             weights_initializer = \
-                tf.contrib.layers.variance_scaling_initializer(
-                    factor=2.0,
-                    mode='FAN_IN',
-                    uniform=False
+                tf.keras.initializers.VarianceScaling(
+                    scale=2.0,
+                    mode='fan_in',
+                    distribution='untruncated_normal'
                 ) # Delving deep into rectifier by He.
         biases_initializer = tf.constant_initializer(0.0)
         channel_in = inputs[0].shape[1]
-        with tf.variable_scope(name) as scope:
-            with tf.variable_scope('weights') as scope:
-                weghts = tf.get_variable('W', [channel_in, channel_out],
+        with tf.compat.v1.variable_scope(name) as scope:
+            with tf.compat.v1.variable_scope('weights') as scope:
+                weghts = tf.compat.v1.get_variable('W', [channel_in, channel_out],
                                          initializer=weights_initializer,
                                          trainable=trainable)
-            with tf.variable_scope('biases') as scope:
-                biases = tf.get_variable('b', [1, channel_out],
+            with tf.compat.v1.variable_scope('biases') as scope:
+                biases = tf.compat.v1.get_variable('b', [1, channel_out],
                                          initializer=biases_initializer,
                                          trainable=trainable)
             if activation is not None:
@@ -82,4 +82,4 @@ class DNNNetwork(network_base.NetworkBase):
             return tf.nn.sigmoid
         if activation == 'softmax':
             return tf.nn.softmax
-        raise Exception, 'Unknown activation type.'
+        raise Exception('Unknown activation type.')
