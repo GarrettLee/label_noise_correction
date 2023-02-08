@@ -80,13 +80,13 @@ class LossCorrectionNetwork(network_base.NetworkBase):
                 self.layers['loss'] = loss
             elif self.loss_type == 'backward':
                 y_trans = tf.transpose(self.get_placeholder_y(), perm=[1,0])
-                t_inv = tf.matrix_inverse(self.get_output('t'))
+                t_inv = tf.linalg.inv(self.get_output('t'))
                 t_inv_trans = tf.transpose(t_inv, perm=[1,0])
                 l_orig = -tf.math.log(self.get_tensor_prediction() + 10e-12)
                 l_backward_full = tf.matmul(l_orig, t_inv_trans)
                 loss = tf.reduce_mean(
                     tf.math.reduce_sum(
-                        tf.matrix_band_part(
+                        tf.linalg.band_part(
                             tf.matmul(l_backward_full, y_trans),
                             0,
                             0
